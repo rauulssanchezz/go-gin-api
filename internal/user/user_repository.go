@@ -6,10 +6,11 @@ import (
 
 type UserRepository interface {
 	Create(user User) error
-	Update(user User) error
+	Update(user User, id string) error
 	GetById(id string) (User, error)
 	Delete(id string) error
 	GetByEmail(email string) (User, error)
+	Login(email string, password string) (User, error)
 }
 
 type UserRepositoryStruct struct {
@@ -60,10 +61,23 @@ func (repository *UserRepositoryStruct) GetById(id string) (User, error) {
 }
 
 func (repository *UserRepositoryStruct) GetByEmail(email string) (User, error) {
-	const query string = `SELECT * FROM users WHERE email = WHERE id = $1`
+	const query string = `SELECT * FROM users WHERE email = $1`
 
 	var user User
 	err := repository.DB.QueryRow(query, email).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
+
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, err
+}
+
+func (repository *UserRepositoryStruct) Login(email string, password string) (User, error) {
+	const query string = `SELECT * FROM users WHERE email = $1 and password $2`
+
+	var user User
+	err := repository.DB.QueryRow(query, email, password).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
 
 	if err != nil {
 		return User{}, err
