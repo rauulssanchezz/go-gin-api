@@ -1,17 +1,15 @@
-package repository
+package task
 
 import (
 	"database/sql"
-
-	"github.com/rauulssanchezz/go-gin-api/internal/model"
 )
 
 type TaskRepository interface {
-	Create(task *model.Task) error
-	Update(id string, task *model.Task) error
-	GetAll() ([]model.Task, error)
+	Create(task Task) error
+	Update(id string, task Task) error
+	GetAll() ([]Task, error)
 	Delete(id string) error
-	GetById(id string) (model.Task, error)
+	GetById(id string) (Task, error)
 }
 
 type PostgreSQLTaskRepository struct {
@@ -22,7 +20,7 @@ func NewPostgreSQLTaskRepository(db *sql.DB) *PostgreSQLTaskRepository {
 	return &PostgreSQLTaskRepository{DB: db}
 }
 
-func (repository *PostgreSQLTaskRepository) Create(task *model.Task) error {
+func (repository *PostgreSQLTaskRepository) Create(task Task) error {
 	const query string = `INSERT INTO tasks(title, description, done)
 							VALUES ($1, $2, $3)`
 
@@ -31,7 +29,7 @@ func (repository *PostgreSQLTaskRepository) Create(task *model.Task) error {
 	return err
 }
 
-func (repository *PostgreSQLTaskRepository) Update(id string, task *model.Task) error {
+func (repository *PostgreSQLTaskRepository) Update(id string, task Task) error {
 	const query string = `UPDATE tasks SET title = $1, description = $2, done = $3 where id = $4`
 
 	res, err := repository.DB.Exec(query, task.Title, task.Description, task.Done, id)
@@ -53,7 +51,7 @@ func (repository *PostgreSQLTaskRepository) Update(id string, task *model.Task) 
 	return err
 }
 
-func (repository *PostgreSQLTaskRepository) GetAll() ([]model.Task, error) {
+func (repository *PostgreSQLTaskRepository) GetAll() ([]Task, error) {
 	const query string = `SELECT * FROM tasks`
 
 	rows, err := repository.DB.Query(query)
@@ -64,9 +62,9 @@ func (repository *PostgreSQLTaskRepository) GetAll() ([]model.Task, error) {
 
 	defer rows.Close()
 
-	var tasks []model.Task
+	var tasks []Task
 	for rows.Next() {
-		var task model.Task
+		var task Task
 		err := rows.Scan(&task.ID, &task.Title, &task.Description, &task.Done, &task.CreatedAt)
 
 		if err != nil {
@@ -100,14 +98,14 @@ func (repository *PostgreSQLTaskRepository) Delete(id string) error {
 	return err
 }
 
-func (repository *PostgreSQLTaskRepository) GetById(id string) (model.Task, error) {
+func (repository *PostgreSQLTaskRepository) GetById(id string) (Task, error) {
 	const query string = `SELECT * FROM tasks WHERE id = $1`
 
-	var task model.Task
+	var task Task
 	err := repository.DB.QueryRow(query, id).Scan(&task.ID, &task.Title, &task.Description, &task.Done, &task.CreatedAt)
 
 	if err != nil {
-		return model.Task{}, err
+		return Task{}, err
 	}
 
 	return task, nil

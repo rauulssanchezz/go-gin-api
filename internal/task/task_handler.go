@@ -1,11 +1,9 @@
-package handler
+package task
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rauulssanchezz/go-gin-api/internal/model"
-	"github.com/rauulssanchezz/go-gin-api/internal/service"
 )
 
 type TaskHandler interface {
@@ -17,17 +15,17 @@ type TaskHandler interface {
 }
 
 type TaskHandlerStruct struct {
-	Service *service.TaskServiceStruct
+	Service *TaskServiceStruct
 }
 
-func NewTaskHandler(service *service.TaskServiceStruct) *TaskHandlerStruct {
+func NewTaskHandler(service *TaskServiceStruct) *TaskHandlerStruct {
 	return &TaskHandlerStruct{
 		Service: service,
 	}
 }
 
 func (handler *TaskHandlerStruct) Create(context *gin.Context) {
-	var task model.Task
+	var task Task
 
 	err := context.ShouldBindJSON(&task)
 
@@ -36,7 +34,7 @@ func (handler *TaskHandlerStruct) Create(context *gin.Context) {
 		return
 	}
 
-	err = handler.Service.Create(&task)
+	err = handler.Service.Create(task)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -47,7 +45,7 @@ func (handler *TaskHandlerStruct) Create(context *gin.Context) {
 }
 
 func (handler *TaskHandlerStruct) Update(context *gin.Context) {
-	var task model.Task
+	var task Task
 
 	id := context.Param("id")
 
@@ -63,7 +61,7 @@ func (handler *TaskHandlerStruct) Update(context *gin.Context) {
 		return
 	}
 
-	err = handler.Service.Update(id, &task)
+	err = handler.Service.Update(id, task)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
