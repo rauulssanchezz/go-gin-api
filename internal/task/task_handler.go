@@ -15,11 +15,11 @@ type TaskHandler interface {
 }
 
 type TaskHandlerStruct struct {
-	Service *TaskServiceStruct
+	Service TaskServiceStruct
 }
 
-func NewTaskHandler(service *TaskServiceStruct) *TaskHandlerStruct {
-	return &TaskHandlerStruct{
+func NewTaskHandler(service TaskServiceStruct) TaskHandlerStruct {
+	return TaskHandlerStruct{
 		Service: service,
 	}
 }
@@ -50,7 +50,7 @@ func (handler *TaskHandlerStruct) Update(context *gin.Context) {
 	id := context.Param("id")
 
 	if id == "" {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
+		context.JSON(http.StatusBadRequest, gin.H{"error": "missing required params"})
 		return
 	}
 
@@ -75,7 +75,7 @@ func (handler *TaskHandlerStruct) GetById(context *gin.Context) {
 	id := context.Param("id")
 
 	if id == "" {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
+		context.JSON(http.StatusBadRequest, gin.H{"error": "missing required params"})
 		return
 	}
 
@@ -93,7 +93,7 @@ func (handler *TaskHandlerStruct) Delete(context *gin.Context) {
 	id := context.Param("id")
 
 	if id == "" {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
+		context.JSON(http.StatusBadRequest, gin.H{"error": "missing required params"})
 		return
 	}
 

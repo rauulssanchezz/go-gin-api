@@ -12,15 +12,15 @@ type TaskRepository interface {
 	GetById(id string) (Task, error)
 }
 
-type PostgreSQLTaskRepository struct {
+type TaskRepositoryStruct struct {
 	DB *sql.DB
 }
 
-func NewPostgreSQLTaskRepository(db *sql.DB) *PostgreSQLTaskRepository {
-	return &PostgreSQLTaskRepository{DB: db}
+func NewTaskRepositoryStruct(db *sql.DB) TaskRepositoryStruct {
+	return TaskRepositoryStruct{DB: db}
 }
 
-func (repository *PostgreSQLTaskRepository) Create(task Task) error {
+func (repository *TaskRepositoryStruct) Create(task Task) error {
 	const query string = `INSERT INTO tasks(title, description, done)
 							VALUES ($1, $2, $3)`
 
@@ -29,7 +29,7 @@ func (repository *PostgreSQLTaskRepository) Create(task Task) error {
 	return err
 }
 
-func (repository *PostgreSQLTaskRepository) Update(id string, task Task) error {
+func (repository *TaskRepositoryStruct) Update(id string, task Task) error {
 	const query string = `UPDATE tasks SET title = $1, description = $2, done = $3 where id = $4`
 
 	res, err := repository.DB.Exec(query, task.Title, task.Description, task.Done, id)
@@ -51,7 +51,7 @@ func (repository *PostgreSQLTaskRepository) Update(id string, task Task) error {
 	return err
 }
 
-func (repository *PostgreSQLTaskRepository) GetAll() ([]Task, error) {
+func (repository *TaskRepositoryStruct) GetAll() ([]Task, error) {
 	const query string = `SELECT * FROM tasks`
 
 	rows, err := repository.DB.Query(query)
@@ -76,7 +76,7 @@ func (repository *PostgreSQLTaskRepository) GetAll() ([]Task, error) {
 	return tasks, nil
 }
 
-func (repository *PostgreSQLTaskRepository) Delete(id string) error {
+func (repository *TaskRepositoryStruct) Delete(id string) error {
 	const query string = `DELETE FROM tasks WHERE id = $1`
 
 	res, err := repository.DB.Exec(query, id)
@@ -98,7 +98,7 @@ func (repository *PostgreSQLTaskRepository) Delete(id string) error {
 	return err
 }
 
-func (repository *PostgreSQLTaskRepository) GetById(id string) (Task, error) {
+func (repository *TaskRepositoryStruct) GetById(id string) (Task, error) {
 	const query string = `SELECT * FROM tasks WHERE id = $1`
 
 	var task Task

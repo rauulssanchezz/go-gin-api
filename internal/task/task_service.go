@@ -15,11 +15,11 @@ type TaskService interface {
 }
 
 type TaskServiceStruct struct {
-	Repo TaskRepository
+	Repo TaskRepositoryStruct
 }
 
-func NewTaskService(repo TaskRepository) *TaskServiceStruct {
-	return &TaskServiceStruct{
+func NewTaskService(repo TaskRepositoryStruct) TaskServiceStruct {
+	return TaskServiceStruct{
 		Repo: repo,
 	}
 }

@@ -9,9 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"github.com/rauulssanchezz/go-gin-api/internal/handler"
-	"github.com/rauulssanchezz/go-gin-api/internal/repository"
-	"github.com/rauulssanchezz/go-gin-api/internal/service"
+	"github.com/rauulssanchezz/go-gin-api/internal/task"
+	"github.com/rauulssanchezz/go-gin-api/internal/user"
 	"github.com/rauulssanchezz/go-gin-api/pkg/router"
 )
 
@@ -47,12 +46,16 @@ func main() {
 	}
 	log.Println("Conexión a PostgreSQL exitosa.")
 
-	taskRepo := repository.NewPostgreSQLTaskRepository(db)
-	taskService := service.NewTaskService(taskRepo)
-	taskHandler := handler.NewTaskHandler(taskService)
+	taskRepo := task.NewTaskRepositoryStruct(db)
+	taskService := task.NewTaskService(taskRepo)
+	taskHandler := task.NewTaskHandler(taskService)
+
+	userRepo := user.NewUserRepository(db)
+	userService := user.NewUserService(userRepo)
+	userHandler := user.NewUserHandler(userService)
 
 	r := gin.Default()
-	router.SetUpRoutes(r, taskHandler)
+	router.SetUpRoutes(r, taskHandler, userHandler)
 
 	apiPort := "8080"
 
